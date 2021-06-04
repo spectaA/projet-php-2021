@@ -14,7 +14,6 @@
             <thead>
                 <tr>
                     <th>Nom</th>
-                    <th>Prénom</th>
                     <th>Age</th>
                     <th>Disponibilités à venir</th>
                     <th></th>
@@ -23,8 +22,11 @@
             <tbody>
                 <?php foreach($users as $key => $user) { ?>
                     <tr>
-                        <td><?= $user->lastname ?></td>
-                        <td><?= $user->firstname ?></td>
+                        <td>
+                            <a href="<?= redstr('getUser').'&id='.$user->id ?>">
+                                <?= $user->fullname ?>
+                            </a>
+                        </td>
                         <td><?= $user->age ?> ans</td>
                         <td><?= $user->availability_count ?></td>
                         <td>

@@ -1,6 +1,6 @@
 <?php
     ob_start();
-    $title = 'Accueil';
+    $title = 'Statistiques';
 ?>
 
 <div class="container">

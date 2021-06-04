@@ -1,7 +1,4 @@
 /* Database */
-SET
-    storage_engine = INNODB;
-
 CREATE DATABASE IF NOT EXISTS vaccin_reservation;
 
 USE vaccin_reservation;
@@ -12,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `firstname` varchar(100) NOT NULL,
     `lastname` varchar(100) NOT NULL,
     `birthday` date NOT NULL,
-    `phone` int(10) unsigned NOT NULL,
+    `phone` int(10) unsigned ZEROFILL NOT NULL,
     `email` varchar(320) NOT NULL,
     `role` enum('user', 'admin') NOT NULL,
     `password` varchar(255) NOT NULL,
@@ -41,7 +38,13 @@ CREATE TABLE IF NOT EXISTS `availabilities` (
     PRIMARY KEY (`id`),
     UNIQUE (`center_id`, `date`, `user_id`),
     KEY `fk_idx_availabilities_user_id` (`user_id`),
-    CONSTRAINT `fk_availabilities_user_id` FOREIGN KEY `fk_idx_availabilities_user_id` (`user_id`) REFERENCES `users` (`id`),
+    CONSTRAINT `fk_availabilities_user_id`
+        FOREIGN KEY `fk_idx_availabilities_user_id` (`user_id`)
+        REFERENCES `users` (`id`)
+        ON DELETE CASCADE,
     KEY `fk_idx_availabilities_center_id` (`center_id`),
-    CONSTRAINT `fk_availabilities_center_id` FOREIGN KEY `fk_idx_availabilities_center_id` (`center_id`) REFERENCES `vaccination_centers` (`id`)
+    CONSTRAINT `fk_availabilities_center_id`
+        FOREIGN KEY `fk_idx_availabilities_center_id` (`center_id`)
+        REFERENCES `vaccination_centers` (`id`)
+        ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
