@@ -12,7 +12,7 @@ Ce script créée la base de données et les valeurs par défaut.
 
 ## Identifiants et mots de passe
 
-| Utilisateur    | Identifiant              | Mot de passe |
+|                | Identifiant              | Mot de passe |
 | -------------- | ------------------------ | ------------ |
 | Administrateur | admin@example.org        | password     |
 | Utillisateur   | jon.doe@example.org      | password     |
