@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `role` enum('user', 'admin') NOT NULL,
     `password` varchar(255) NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE (`email`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 /* Table vaccination_centers */

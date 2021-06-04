@@ -10,13 +10,15 @@
             <?php if (isset($msg)) { ?>
                 <p class="lead"><?= $msg ?></p>
             <?php } ?>
-            <a class="mb-3" href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour à la page précédente</a>
-            <div class="mb-5">
-                <p class="text-muted" id="redirect-container">
-                    <input type="checkbox" id="redirect" checked="checked">
-                    Retour dans <span id="time">3</span> secondes...
-                </p>
-            </div>
+            <?php if (isset($_SERVER['HTTP_REFERER'])) { ?>
+                <a class="mb-3" href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour à la page précédente</a>
+                <div class="mb-5">
+                    <p class="text-muted" id="redirect-container">
+                        <input type="checkbox" id="redirect" checked="checked">
+                        Retour dans <span id="time">3</span> secondes...
+                    </p>
+                </div>
+            <?php } ?>
         </div>
     </div>
 </div>

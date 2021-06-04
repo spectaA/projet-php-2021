@@ -23,6 +23,10 @@
                     isLogged();
                     $controller->logout();
                     break;
+
+                case 'signup':
+                    header('Location: '.redstr('createUser').'&redirect='.redstr('login'));
+                    break;
                 
                 // Users
                 case 'getUser':
@@ -46,6 +50,10 @@
                 case 'getMyProfile':
                     isLogged();
                     header('Location: '.redstr('getUser').'&id='.$_SESSION['user_id']);
+                    break;
+
+                case 'createUser':
+                    $controller->createUser();
                     break;
 
                 case 'updateUser':
@@ -138,7 +146,7 @@
     } catch (Exception $e) {
         $code = $e->getCode();
         $msg = $e->getMessage();
-        switch ($e->getCode()) {
+        switch ($code) {
             case 400:
                 http_response_code(400);
                 require('views/pages/400.php');

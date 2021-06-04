@@ -16,9 +16,8 @@
                     <th>Nom</th>
                     <th>Code postal</th>
                     <th>Ville</th>
-                    <th>Adresse</th>
-                    <th>Personnes disponibles aujourd'hui</th>
-                    <th>Personnes disponibles demain</th>
+                    <th>Disponibilités aujourd'hui</th>
+                    <th>Disponibilités demain</th>
                     <th></th>
                 </tr>
             </thead>
@@ -32,7 +31,6 @@
                         </td>
                         <td><?= $center->postalCode ?></td>
                         <td><?= $center->city ?></td>
-                        <td><?= $center->address ?></td>
                         <td><?= $center->availabilities_today ?></td>
                         <td><?= $center->availabilities_tomorrow ?></td>
                         <td>

@@ -32,10 +32,14 @@
 
                 <label>Téléphone</label><br>
                 <label><small>10 charactères numériques</small></label>
-                <input type="tel" pattern="[0-9]{1,10}" name="phone" class="form-control mb-3" required="" value="<?= isset($user) ? $user->phone : '' ?>">
+                <input type="tel" pattern="[0-9]{8,10}" name="phone" class="form-control mb-3" required="" value="<?= isset($user) ? $user->phone : '' ?>">
 
                 <label>Email</label>
                 <input type="email" name="email" class="form-control mb-3" required="" value="<?= isset($user) ? $user->email : '' ?>">
+
+                <label>Mot de passe</label><br>
+                <label><small>Min. 4 caractères</small></label>
+                <input type="password" name="password" class="form-control mb-3" <?= isset($user) ? '' : 'required' ?>>
 
                 <?php if (isset($_SESSION['admin'])) { ?>
                     <label>Role</label>

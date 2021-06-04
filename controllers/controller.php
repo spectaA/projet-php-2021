@@ -34,7 +34,7 @@
                 $password = $_POST['password'];
 
                 $user = User::getByEmail($email);
-                if (!$user) {
+                if (!$user || !password_verify($password, $user->password)) {
                     http_response_code(404);
                     $bad_credentials = true;
                     require('views/pages/login.php');
@@ -67,7 +67,7 @@
             unset($_SESSION['admin']);
             session_destroy();
             header('Location: '.redstr(''));
-            exit(0);
+
         }
 
         // USERS
@@ -75,13 +75,17 @@
         function getUser() {
     
             if (isset($_GET['id'])) {
+
                 $userId = $_GET['id'];
                 $user = User::getOne($userId);
+
                 $availabilities = Availability::getByUserId($userId);
+
                 if ($_SESSION['user_id'] == $userId) {
                     $is_owner = true;
                 }
                 require('views/pages/user.php');
+
             } else {
                 echo 'Error: aucun identifiant founi';
             }
@@ -93,6 +97,45 @@
             $users = User::getAll();
             require('views/pages/users.php');
     
+        }
+
+        function createUser() {
+
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                // Post: create
+                if (isset($_POST['firstname']) && isset($_POST['lastname']) && isset($_POST['birthday']) && isset($_POST['phone'])
+                        && isset($_POST['email']) && isset($_POST['password'])) {
+                    
+                    $firstname = User::validateNames($_POST['firstname']);
+                    $lastname = User::validateNames($_POST['lastname']);
+                    $birthday = User::validateBirthday($_POST['birthday']);
+                    $phone = User::validatePhone($_POST['phone']);
+                    $email = User::validateEmail($_POST['email']);
+                    $password = User::validatePassword($_POST['password']);
+                    
+                    if (isset($_POST['role']) && isset($_POST['admin'])) {
+                        $role = $_POST['role'];
+                    } else {
+                        $role = 'user';
+                    }
+
+                    User::create($firstname, $lastname, $birthday, $phone, $email, $role, $password);
+
+                    $url = parse_str($_SERVER['HTTP_REFERER'], $referer);
+                    if (isset($referer['redirect'])) {
+                        $url = $referer['redirect'];
+                    } else {
+                        $url = redstr('getUser').'&id='.$userId;
+                    }
+                    header("Location: $url");
+                } else {
+                    throw new Exception(null, 404);
+                }
+            } else {
+                // Get: view
+                require('views/pages/createUpdateUser.php');
+            }
+
         }
 
         function updateUser() {
@@ -109,7 +152,7 @@
                     $phone = User::validatePhone($_POST['phone']);
                     $email = User::validateEmail($_POST['email']);
                     
-                    if (isset($_POST['role'])) {
+                    if (isset($_POST['role']) && isset($_SESSION['admin'])) {
                         $role = $_POST['role'];
                     } else {
                         $user = User::getOne($userId);
@@ -117,6 +160,12 @@
                     }
 
                     User::update($userId, $firstname, $lastname, $birthday, $phone, $email, $role);
+
+                    if (isset($_POST['password']) && $_POST['password'] != '') {
+                        $password = User::validatePassword($_POST['password']);
+                        User::updatePassword($userId, $password);
+                    }
+
                     header('Location: '.redstr('getUser').'&id='.$userId);
                 } else {
                     throw new Exception(null, 404);
@@ -124,9 +173,9 @@
             } else if (isset($_GET['id'])) {
                 // Get: view
                 $user = User::getOne($_GET['id']);
-                require('views/pages/updateUser.php');
+                require('views/pages/createUpdateUser.php');
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
 
         }
@@ -135,13 +184,15 @@
 
             if (isset($_GET['id'])) {
                 if ($_GET['id'] == $_SESSION['user_id'] || isset($_SESSION['admin'])) {
+
                     User::delete($_GET['id']);
                     header('Location: '.redstr('getUsers'));
+
                 } else {
                     throw new Exception(null, 401);
                 }
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
 
         }
@@ -189,7 +240,7 @@
                 }
             } else {
                 // Get: view
-                require('views/pages/updateCenter.php');
+                require('views/pages/createUpdateCenter.php');
             }
 
         }
@@ -214,9 +265,9 @@
             } else if (isset($_GET['id'])) {
                 // Get: view
                 $center = Center::getOne($_GET['id']);
-                require('views/pages/updateCenter.php');
+                require('views/pages/createUpdateCenter.php');
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
 
         }
@@ -231,7 +282,7 @@
                     throw new Exception(null, 401);
                 }
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
 
         }
@@ -243,18 +294,29 @@
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Post: create
                 if (isset($_POST['center_id']) && isset($_POST['date']) && isset($_POST['time'])) {
-                    parse_str($_SERVER['HTTP_REFERER'], $referer);
+                    
+                    parse_str(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '', $referer);
+                    
                     if (isset($referer['user_id']) && ($referer['user_id'] == $_SESSION['user_id'] || isset($_SESSION['admin']))) {
                         $userId = $referer['user_id'];
-                        $centerId = Center::validateId($_POST['center_id']);
-                        $date = Availability::validateDateTime($_POST['date'], $_POST['time']);
-                        Availability::create($userId, $centerId, $date);
+                    } else {
+                        $userId = $_SESSION['user_id'];
+                    }
+                    $centerId = Center::validateId($_POST['center_id']);
+                    $date = Availability::validateDateTime($_POST['date'], $_POST['time']);
+
+                    Availability::create($userId, $centerId, $date);
+
+                    if (isset($_SERVER['HTTP_REFERER']) && isset($_POST['loop'])) {
+                        $url = $_SERVER['HTTP_REFERER'];
+                    } else if (isset($_SERVER['HTTP_REFERER'])) {
                         $url = parse_str($_SERVER['HTTP_REFERER'], $referer);
                         $url = $referer['redirect'];
-                        header("Location: $url");
                     } else {
-                        throw new Exception('Identifiant utilisateur illégal', 401);
+                        $url = redstr('');
                     }
+                    header("Location: $url");
+
                 } else {
                     throw new Exception(null, 404);
                 }
@@ -274,12 +336,19 @@
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Post: create
                 if (isset($_POST['center_id']) && isset($_POST['date']) && isset($_POST['time']) && isset($_POST['availability_id'])) {
+                    
                     $availabilityId = Availability::validateId($_POST['availability_id']);
                     $centerId = Center::validateId($_POST['center_id']);
                     $date = Availability::validateDateTime($_POST['date'], $_POST['time']);
+                    
                     Availability::update($availabilityId, $centerId, $date);
-                    $url = parse_str($_SERVER['HTTP_REFERER'], $referer);
-                    $url = $referer['redirect'];
+                    
+                    if (isset($_SERVER['HTTP_REFERER'])) {
+                        $url = parse_str($_SERVER['HTTP_REFERER'], $referer);
+                        $url = $referer['redirect'];
+                    } else {
+                        $url = redstr('');
+                    }
                     header("Location: $url");
                 } else {
                     throw new Exception(null, 404);
@@ -293,7 +362,7 @@
                 }
                 require('views/pages/createUpdateAvailability.php');
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
     
         }
@@ -304,13 +373,20 @@
 
                 $availability = Availability::getOne($_GET['id']);
                 if ($availability->user_id == $_SESSION['user_id'] || isset($_SESSION['admin'])) {
+                    
                     Availability::delete($_GET['id']);
-                    header('Location: '.$_SERVER['HTTP_REFERER']);
+                    
+                    if (isset($_SERVER['HTTP_REFERER'])) {
+                        $url = $_SERVER['HTTP_REFERER'];
+                    } else {
+                        $url = redstr('');
+                    }
+                    header("Location: $url");
                 } else {
                     throw new Exception(null, 401);
                 }
             } else {
-                throw new Exception('Missing ID', 404);
+                throw new Exception('Missing ID', 400);
             }
 
         }

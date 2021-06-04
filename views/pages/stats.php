@@ -11,7 +11,7 @@
                 <svg class="chart" width="800" height="<?= count($centers) * 50 ?>" aria-labelledby="Availabilities ever by center" role="img">
                     <title id="title">Availabilities ever by center</title>
                     <g class="bar">
-                            <rect width="800" height="<?= count($centers) * 50 ?>" y="0" style="fill-opacity:0;stroke:blue"></rect>
+                            <rect width="800" height="<?= count($centers) * 50 ?>" y="0" style="fill-opacity:0;stroke:#0d6efd"></rect>
                         </g>
                     <?php
                         $i = 0;
@@ -24,7 +24,7 @@
                             $i++;
                     ?>
                         <g class="bar">
-                            <rect width="<?= $width ?>" height="35" y="<?= $y ?>" style="fill:blue;"></rect>
+                            <rect width="<?= $width ?>" height="35" y="<?= $y ?>" style="fill:#0d6efd;"></rect>
                             <text x="<?= $label_x ?>" y="<?= $label_y ?>" dy=".35em"><?= $center->count_ever.' - '.$center->name ?></text>
                         </g>
                     <?php } ?>

@@ -38,6 +38,13 @@
                     <?php } ?>
                 </select>
                 <button class="btn btn-lg btn-primary btn-block" type="submit"><?= isset($availability) ? 'Modifier' : 'Ajouter' ?></button>
+
+                <?php if(!isset($availability)) { ?>
+                    <div>
+                        <input type="checkbox" name="loop" checked>
+                        <label>Continuer à créer</label>
+                    </div>
+                <?php } ?>
             </form>
         </div>
     </div>

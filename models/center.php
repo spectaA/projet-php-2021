@@ -50,7 +50,7 @@
                 $center = $req->fetch();
     
                 if (!$center) {
-                    throw new Exception("Center $centerId not found", 404);
+                    throw new Exception("Centre $centerId introuvable", 404);
                 }
         
                 return $center->name;

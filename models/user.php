@@ -37,7 +37,7 @@
                 $user = $req->fetch();
     
                 if (!$user) {
-                    throw new Exception("Center $userId not found", 404);
+                    throw new Exception("Utilisateur $userId introuvable", 404);
                 }
         
                 // Compute
@@ -56,12 +56,41 @@
 
         }
 
+        public static function create($firstname, $lastname, $birthday, $phone, $email, $role, $password) {
+            $hash = $password ? password_hash($password, PASSWORD_DEFAULT) : null;
+            try {
+                $pdo = getPdo();
+                $query = 'INSERT INTO users (firstname, lastname, birthday, phone, email, role'.($password ? ', password' : '').') ';
+                $query .= 'VALUES (?, ?, ?, ?, ?, ?'.($password ? ', ?' : '').');';
+                $req = $pdo->prepare($query);
+                $params = [$firstname, $lastname, $birthday, $phone, $email, $role];
+                if ($password) {
+                    array_push($params, $hash);
+                }
+                $req->execute($params);
+            } catch (Exception $e) {
+                throw new Exception($e->getMessage(), 400);
+            }
+        }
+
         public static function update($userId, $firstname, $lastname, $birthday, $phone, $email, $role) {
             try {
                 $pdo = getPdo();
                 $query = "UPDATE users SET firstname=?, lastname=?, birthday=?, phone=?, email=?, role=? WHERE id=?;";
                 $req = $pdo->prepare($query);
                 $done = $req->execute([$firstname, $lastname, $birthday, $phone, $email, $role, $userId]);
+            } catch (Exception $e) {
+                throw new Exception($e->getMessage(), 400);
+            }
+        }
+
+        public static function updatePassword($userId, $password) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            try {
+                $pdo = getPdo();
+                $query = "UPDATE users SET `password`=? WHERE id=?;";
+                $req = $pdo->prepare($query);
+                $done = $req->execute([$hash, $userId]);
             } catch (Exception $e) {
                 throw new Exception($e->getMessage(), 400);
             }
@@ -101,14 +130,14 @@
             if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $id)) {
                 return $id;
             }
-            throw new Exception('Identifiant d\'utilisateur invalide', 400);
+            throw new Exception('Identifiant d\'utilisateur invalide (uuid)', 400);
         }
 
         public static function validateNames($name) {
-            if (preg_match('/^[a-z]{0,100}$/i', $name)) {
+            if (preg_match('/^[a-z\,\.\-\' ]{0,100}$/i', $name)) {
                 return $name;
             }
-            throw new Exception('Nom invalide', 400);
+            throw new Exception('Nom invalide (max. 100 lettres ou caractères , . - \')', 400);
         }
 
         public static function validateBirthday($birthday) {
@@ -119,7 +148,7 @@
             if (preg_match('/^[0-9]{1,10}$/i', $phone)) {
                 return (int) $phone;
             }
-            throw new Exception('Numéro de téléphone invalide', 400);
+            throw new Exception('Numéro de téléphone invalide (max. 12 caractères numériques)', 400);
         }
 
         public static function validateEmail($email) {
@@ -134,6 +163,13 @@
                 return $role;
             }
             throw new Exception('Role invalide', 400);
+        }
+
+        public static function validatePassword($password) {
+            if (preg_match('/^.{4,}$/i', $password)) {
+                return $password;
+            }
+            throw new Exception('Mot de passe invalide (min. 4 caractères)', 400);
         }
 
     }

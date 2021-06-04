@@ -25,8 +25,9 @@
                                 <a class="nav-link" href="<?= redstr('getUsers') ?>">Utilisateurs</a>
                                 <a class="nav-link" href="<?= redstr('getCenters') ?>">Centres de vaccination</a>
                                 <a class="nav-link" href="<?= redstr('getStats') ?>">Statistiques</a>
+                            <?php } else { ?>
+                                <a class="nav-link" href="<?= redstr('getMyProfile') ?>">Mes disponibilités</a>
                             <?php } ?>
-                            <a class="nav-link" href="<?= redstr('getMyProfile') ?>">Mes disponibilités</a>
                             <a class="d-inline-block d-lg-none nav-link" href="<?= redstr('getMyProfile') ?>">Mon profil</a>
                         </div>
                     </div>
@@ -41,6 +42,15 @@
                             </svg>
                         </a>
                     </div>
+                <?php } else { ?>
+                    <div class="d-flex d-none d-lg-block">
+                        <a class="text-dark mx-3" href="<?= redstr('login') ?>" style="text-decoration:none;">
+                            Se connecter
+                        </a>
+                        <a class="text-dark" href="<?= redstr('signup') ?>" style="text-decoration:none;">
+                            S'inscrire
+                        </a>
+                    </div>
                 <?php } ?>
             </div>
         </nav>
@@ -52,7 +62,7 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    Mathias Billot 2020-2021
+                    KVAX by Mathias Billot 2020-2021
                 </div>
             </div>
         </div>
