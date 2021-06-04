@@ -185,7 +185,8 @@
             if (isset($_GET['id'])) {
                 if ($_GET['id'] == $_SESSION['user_id'] || isset($_SESSION['admin'])) {
 
-                    User::delete($_GET['id']);
+                    $id = User::validateId($_GET['id']);
+                    User::delete($id);
                     header('Location: '.redstr('getUsers'));
 
                 } else {
@@ -276,8 +277,12 @@
 
             if (isset($_GET['id'])) {
                 if (isset($_SESSION['admin'])) {
-                    Center::delete($_GET['id']);
+
+                    $id = Center::validateId($_GET['id']);
+                    Center::delete($id);
+
                     header('Location: '.redstr('getCenters'));
+
                 } else {
                     throw new Exception(null, 401);
                 }
@@ -372,9 +377,11 @@
             if (isset($_GET['id'])) {
 
                 $availability = Availability::getOne($_GET['id']);
+                
                 if ($availability->user_id == $_SESSION['user_id'] || isset($_SESSION['admin'])) {
                     
-                    Availability::delete($_GET['id']);
+                    $id = Availability::validateId($_GET['id']);
+                    Availability::delete($id);
                     
                     if (isset($_SERVER['HTTP_REFERER'])) {
                         $url = $_SERVER['HTTP_REFERER'];
@@ -382,6 +389,7 @@
                         $url = redstr('');
                     }
                     header("Location: $url");
+
                 } else {
                     throw new Exception(null, 401);
                 }

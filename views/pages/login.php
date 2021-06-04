@@ -42,7 +42,7 @@
                 <input name="email" type="email" id="inputEmail" class="form-control mb-3" placeholder="Email" required="" autofocus="">
                 
                 <label for="inputPassword">Mot de passe</label>
-                <input name="password" type="password" id="inputPassword" class="form-control mb-3" placeholder="Password" required="">
+                <input name="password" type="password" id="inputPassword" class="form-control mb-3" placeholder="Mot de passe" required="">
                 
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Se connecter</button>
             </form>

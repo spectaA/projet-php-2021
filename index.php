@@ -164,7 +164,7 @@
                 require('views/pages/404.php');
                 break;
             default:
-                
+                throw $e;
         }
         exit(0);
     } 
