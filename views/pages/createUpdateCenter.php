@@ -1,6 +1,6 @@
 <?php
     ob_start();
-    $title = '400';
+    $title = (isset($center) ? 'Modifier' : 'Créer').' un centre';
 ?>
 
 <style>

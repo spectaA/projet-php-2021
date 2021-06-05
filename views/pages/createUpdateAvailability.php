@@ -1,6 +1,6 @@
 <?php
     ob_start();
-    $title = isset($availability) ? 'Modifier' : 'Créer';
+    $title = (isset($availability) ? 'Modifier' : 'Créer').' une dispo';
 ?>
 
 <style>

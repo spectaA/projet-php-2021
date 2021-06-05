@@ -1,6 +1,6 @@
 <?php
     ob_start();
-    $title = '400';
+    $title = (isset($availability) ? 'Modifier' : 'Créer').' un utilisateur';
 ?>
 
 <style>
